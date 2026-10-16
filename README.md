@@ -97,7 +97,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **[ripgrep](https://github.com/BurntSushi/ripgrep)** | `grep` but orders of magnitude faster |
 | **[fzf](https://github.com/junegunn/fzf)** | Fuzzy finder (Ctrl+R / Ctrl+T / Alt+C) |
 | **[zoxide](https://github.com/ajeetdsouza/zoxide)** | Smart `cd` that learns your habits |
-| **[delta](https://github.com/dandavison/delta)** | Beautiful git diffs with syntax highlighting |
 
 ## What It Does
 
@@ -208,17 +207,6 @@ For 3 plugins, a plugin manager is overkill:
 - Bundled in `fonts/` in Regular/Bold/Italic/BoldItalic weights
 
 Source: [subframe7536/maple-font](https://github.com/subframe7536/maple-font). Alternatives: Sarasa Mono SC, JetBrains Mono Nerd Font.
-
-### Why git-delta for diffs?
-
-Git's default diff output is functional but ugly. Delta adds:
-- Syntax highlighting in diffs
-- Line numbers
-- Side-by-side view
-- Proper word-level diff highlighting
-- Navigate between files with `n`/`N`
-
-Configured globally — works with `git diff`, `git log -p`, `git show`, etc. Zero behavior change, just better output.
 
 ### Why zoxide over plain cd?
 

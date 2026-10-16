@@ -97,7 +97,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **[ripgrep](https://github.com/BurntSushi/ripgrep)** | 比 `grep` 快几个数量级 |
 | **[fzf](https://github.com/junegunn/fzf)** | 模糊查找器（Ctrl+R / Ctrl+T / Alt+C） |
 | **[zoxide](https://github.com/ajeetdsouza/zoxide)** | 智能 `cd`，学习你的习惯 |
-| **[delta](https://github.com/dandavison/delta)** | 带语法高亮的 git diff |
 
 ## 脚本做了什么
 
@@ -206,10 +205,6 @@ GPU 加速、原生 macOS 应用、启动快、配置格式干净。iTerm2 做�
 - 仓库内置 Regular/Bold/Italic/BoldItalic 四种字重
 
 来源：[subframe7536/maple-font](https://github.com/subframe7536/maple-font)。
-
-### 为什么用 git-delta？
-
-Git 默认 diff 能用但太丑。Delta 加了语法高亮、行号、并排对比、精确到单词的变更高亮。
 
 ### 为什么用 zoxide？
 

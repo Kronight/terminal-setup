@@ -5,7 +5,7 @@
 # Platforms: macOS, Debian/Ubuntu, Windows (via WSL)
 #
 # Stack: Ghostty + (Fish or Zsh) + Starship + Nerd Font (Maple Mono NF CN)
-# Tools: bat, eza, fd, ripgrep, zoxide, delta, fzf
+# Tools: bat, eza, fd, ripgrep, zoxide, fzf
 # Theme: Catppuccin Mocha (Starship)
 #
 # Usage:
@@ -485,7 +485,7 @@ echo -e "${BOLD}  🛠  Step 5/7: CLI Tools${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 install_cli_tools_macos() {
-    local TOOLS=(bat eza fd ripgrep zoxide git-delta fzf)
+    local TOOLS=(bat eza fd ripgrep zoxide fzf)
     for tool in "${TOOLS[@]}"; do
         if brew list "$tool" &>/dev/null; then
             success "$tool already installed"
@@ -552,18 +552,6 @@ install_cli_tools_linux() {
             success "eza installed via apt"
         else
             warn "eza not available via apt — skipping (install manually: https://github.com/eza-community/eza)"
-        fi
-    fi
-
-    # git-delta — apt only (packaged as git-delta on modern Debian/Ubuntu)
-    if has_cmd delta; then
-        success "git-delta already installed"
-    else
-        info "Installing git-delta..."
-        if run_cmd sudo apt-get install -y git-delta 2>/dev/null; then
-            success "git-delta installed via apt"
-        else
-            warn "git-delta not available via apt — skipping (install manually: https://github.com/dandavison/delta)"
         fi
     fi
 
@@ -780,19 +768,10 @@ else
     success "Zsh config deployed"
 fi
 
-# ─── Git config for delta ────────────────────────────────────────────
-if has_cmd delta || $DRY_RUN; then
-    info "Configuring git-delta as git pager..."
-    run_cmd git config --global core.pager delta
-    run_cmd git config --global interactive.diffFilter "delta --color-only"
-    run_cmd git config --global delta.navigate true
-    run_cmd git config --global delta.dark true
-    run_cmd git config --global delta.line-numbers true
-    run_cmd git config --global delta.side-by-side true
-    run_cmd git config --global merge.conflictstyle diff3
-    run_cmd git config --global diff.colorMoved default
-    success "git-delta configured"
-fi
+# ─── Git config (quality-of-life) ────────────────────────────────────
+run_cmd git config --global merge.conflictstyle diff3
+run_cmd git config --global diff.colorMoved default
+success "Git config applied"
 
 # ─── Done! ───────────────────────────────────────────────────────────
 echo ""
@@ -828,7 +807,6 @@ fi
 echo -e "    🚀 Starship             — prompt (Catppuccin Mocha)"
 echo -e "    🔤 Maple Mono NF CN     — nerd font"
 echo -e "    📦 bat eza fd rg        — modern coreutils"
-echo -e "    🔀 delta                — git diff pager"
 echo -e "    📁 zoxide               — smart cd"
 echo -e "    🔍 fzf                  — fuzzy finder"
 echo ""
