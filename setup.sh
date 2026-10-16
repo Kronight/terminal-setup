@@ -49,6 +49,7 @@ for arg in "$@"; do
         --fish)    SHELL_CHOICE="fish" ;;
         --zsh)     SHELL_CHOICE="zsh" ;;
         --dry-run) DRY_RUN=true ;;
+        *)         warn "Unknown option: $arg (ignored)" ;;
     esac
 done
 
@@ -169,22 +170,6 @@ pkg_install() {
     success "$pkg installed"
 }
 
-# Install a cask (macOS only, no-op on Linux)
-cask_install() {
-    local cask="$1"
-    if [[ "$OS" != "macos" ]]; then
-        warn "Cask install is macOS-only, skipping $cask on $OS"
-        return 0
-    fi
-    if brew list --cask "$cask" &>/dev/null; then
-        success "$cask already installed"
-        return 0
-    fi
-    info "Installing $cask..."
-    run_cmd brew install --cask "$cask"
-    success "$cask installed"
-}
-
 # Check if a command exists
 has_cmd() {
     command -v "$1" &>/dev/null
@@ -202,10 +187,12 @@ case "$OS" in
             info "Installing Homebrew..."
             run_cmd /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             # Auto-detect Homebrew prefix (Apple Silicon vs Intel)
-            if [[ -d /opt/homebrew ]]; then
-                eval "$(/opt/homebrew/bin/brew shellenv)"
-            elif [[ -d /usr/local/Homebrew ]]; then
-                eval "$(/usr/local/bin/brew shellenv)"
+            if ! $DRY_RUN; then
+                if [[ -d /opt/homebrew ]]; then
+                    eval "$(/opt/homebrew/bin/brew shellenv)"
+                elif [[ -d /usr/local/Homebrew ]]; then
+                    eval "$(/usr/local/bin/brew shellenv)"
+                fi
             fi
             success "Homebrew installed"
         else
@@ -287,7 +274,7 @@ MAPLE_FONTS=(
 )
 
 # Font source: bundled in repo (fonts/) — no download needed
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Note: SCRIPT_DIR already points at the repo (or the temp clone) from Step 0 — do not recompute
 FONT_SRC_DIR="$SCRIPT_DIR/fonts"
 
 FONT_INSTALLED=true
@@ -299,7 +286,7 @@ if $FONT_INSTALLED; then
     success "Maple Mono NF CN fonts already installed"
 else
     info "Installing Maple Mono NF CN fonts from repo..."
-    mkdir -p "$FONT_DIR"
+    run_cmd mkdir -p "$FONT_DIR"
     for font in "${MAPLE_FONTS[@]}"; do
         if [[ -f "$FONT_SRC_DIR/$font" ]]; then
             run_cmd cp "$FONT_SRC_DIR/$font" "$FONT_DIR/$font"
@@ -336,18 +323,26 @@ install_shell_macos() {
             success "Fish already installed"
         fi
 
-        FISH_PATH="$(which fish)"
-        if ! grep -qxF "$FISH_PATH" /etc/shells 2>/dev/null; then
-            info "Adding Fish to /etc/shells (may need sudo)..."
-            echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
-        fi
-
-        if [[ "$SHELL" != "$FISH_PATH" ]]; then
-            info "Setting Fish as default shell..."
-            run_cmd chsh -s "$FISH_PATH"
-            success "Default shell changed to Fish"
+        FISH_PATH="$(command -v fish || true)"
+        if [[ -z "$FISH_PATH" ]]; then
+            warn "fish not available (dry-run?) — skipping /etc/shells and default shell change"
         else
-            success "Fish is already the default shell"
+            if ! grep -qxF "$FISH_PATH" /etc/shells 2>/dev/null; then
+                if $DRY_RUN; then
+                    echo -e "${YELLOW}[DRY-RUN]${NC} add $FISH_PATH to /etc/shells"
+                else
+                    info "Adding Fish to /etc/shells (may need sudo)..."
+                    echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
+                fi
+            fi
+
+            if [[ "$SHELL" != "$FISH_PATH" ]]; then
+                info "Setting Fish as default shell..."
+                run_cmd chsh -s "$FISH_PATH"
+                success "Default shell changed to Fish"
+            else
+                success "Fish is already the default shell"
+            fi
         fi
     else
         # Zsh is pre-installed on macOS, just install the plugins
@@ -362,8 +357,10 @@ install_shell_macos() {
             fi
         done
 
-        ZSH_PATH="$(which zsh)"
-        if [[ "$SHELL" != "$ZSH_PATH" ]]; then
+        ZSH_PATH="$(command -v zsh || true)"
+        if [[ -z "$ZSH_PATH" ]]; then
+            warn "zsh not available (dry-run?) — skipping default shell change"
+        elif [[ "$SHELL" != "$ZSH_PATH" ]]; then
             info "Setting Zsh as default shell..."
             run_cmd chsh -s "$ZSH_PATH"
             success "Default shell changed to Zsh"
@@ -389,18 +386,26 @@ install_shell_linux() {
             success "Fish already installed"
         fi
 
-        FISH_PATH="$(which fish)"
-        if ! grep -qxF "$FISH_PATH" /etc/shells 2>/dev/null; then
-            info "Adding Fish to /etc/shells..."
-            echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
-        fi
-
-        if [[ "$SHELL" != "$FISH_PATH" ]]; then
-            info "Setting Fish as default shell..."
-            run_cmd chsh -s "$FISH_PATH"
-            success "Default shell changed to Fish"
+        FISH_PATH="$(command -v fish || true)"
+        if [[ -z "$FISH_PATH" ]]; then
+            warn "fish not available (dry-run?) — skipping /etc/shells and default shell change"
         else
-            success "Fish is already the default shell"
+            if ! grep -qxF "$FISH_PATH" /etc/shells 2>/dev/null; then
+                if $DRY_RUN; then
+                    echo -e "${YELLOW}[DRY-RUN]${NC} add $FISH_PATH to /etc/shells"
+                else
+                    info "Adding Fish to /etc/shells..."
+                    echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
+                fi
+            fi
+
+            if [[ "$SHELL" != "$FISH_PATH" ]]; then
+                info "Setting Fish as default shell..."
+                run_cmd chsh -s "$FISH_PATH"
+                success "Default shell changed to Fish"
+            else
+                success "Fish is already the default shell"
+            fi
         fi
     else
         # Install Zsh if not present
@@ -414,7 +419,6 @@ install_shell_linux() {
 
         # Install Zsh plugins from apt or git clone
         local ZSH_PLUGINS_DIR="/usr/share"
-        local need_clone=false
 
         # zsh-autosuggestions
         if [[ -f "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
@@ -444,8 +448,22 @@ install_shell_linux() {
             success "zsh-syntax-highlighting installed"
         fi
 
-        ZSH_PATH="$(which zsh)"
-        if [[ "$SHELL" != "$ZSH_PATH" ]]; then
+        # zsh-completions
+        if [[ -d "$ZSH_PLUGINS_DIR/zsh-completions" ]] || dpkg -s zsh-completions &>/dev/null 2>&1; then
+            success "zsh-completions already installed"
+        else
+            info "Installing zsh-completions..."
+            run_cmd sudo apt-get install -y zsh-completions 2>/dev/null || {
+                info "apt package not available, cloning from git..."
+                run_cmd sudo git clone https://github.com/zsh-users/zsh-completions "$ZSH_PLUGINS_DIR/zsh-completions"
+            }
+            success "zsh-completions installed"
+        fi
+
+        ZSH_PATH="$(command -v zsh || true)"
+        if [[ -z "$ZSH_PATH" ]]; then
+            warn "zsh not available (dry-run?) — skipping default shell change"
+        elif [[ "$SHELL" != "$ZSH_PATH" ]]; then
             info "Setting Zsh as default shell..."
             run_cmd chsh -s "$ZSH_PATH"
             success "Default shell changed to Zsh"
@@ -512,7 +530,7 @@ install_cli_tools_linux() {
     # bat is installed as 'batcat' on Debian/Ubuntu — create symlink
     if has_cmd batcat && ! has_cmd bat; then
         info "Creating symlink: batcat → bat"
-        mkdir -p "$HOME/.local/bin"
+        run_cmd mkdir -p "$HOME/.local/bin"
         run_cmd ln -sf "$(which batcat)" "$HOME/.local/bin/bat"
         success "bat symlink created"
     fi
@@ -520,14 +538,17 @@ install_cli_tools_linux() {
     # fd is installed as 'fdfind' on Debian/Ubuntu — create symlink
     if has_cmd fdfind && ! has_cmd fd; then
         info "Creating symlink: fdfind → fd"
-        mkdir -p "$HOME/.local/bin"
+        run_cmd mkdir -p "$HOME/.local/bin"
         run_cmd ln -sf "$(which fdfind)" "$HOME/.local/bin/fd"
         success "fd symlink created"
     fi
 
-    # Helper: install bundled binary from bin/linux-x86_64/
+    # Helper: install bundled binary from bin/linux-x86_64/ (x86_64 only)
     install_bundled_bin() {
         local name="$1"
+        if [[ "$(uname -m)" != "x86_64" ]]; then
+            return 1
+        fi
         if [[ -f "$SCRIPT_DIR/bin/linux-x86_64/$name" ]]; then
             run_cmd sudo cp "$SCRIPT_DIR/bin/linux-x86_64/$name" "/usr/local/bin/$name"
             run_cmd sudo chmod +x "/usr/local/bin/$name"
@@ -588,24 +609,23 @@ else
             ;;
         debian|wsl)
             info "Installing Starship..."
-            if [[ -f "$SCRIPT_DIR/bin/linux-x86_64/starship" ]]; then
+            if [[ "$(uname -m)" == "x86_64" && -f "$SCRIPT_DIR/bin/linux-x86_64/starship" ]]; then
                 # Use bundled binary (most reliable)
                 run_cmd sudo cp "$SCRIPT_DIR/bin/linux-x86_64/starship" /usr/local/bin/starship
                 run_cmd sudo chmod +x /usr/local/bin/starship
             else
                 # Download from GitHub releases (starship.rs installer may fail on some WSL setups)
                 info "Bundled binary not found, downloading from GitHub..."
-                local starship_arch
+                starship_arch=""
                 case "$(uname -m)" in
                     x86_64)  starship_arch="x86_64" ;;
                     aarch64) starship_arch="aarch64" ;;
                     *) error "Unsupported arch for Starship: $(uname -m)" ;;
                 esac
-                local starship_tmp
-                starship_tmp="$(mktemp -d)"
                 if $DRY_RUN; then
                     echo -e "${YELLOW}[DRY-RUN]${NC} Download starship from GitHub releases"
                 else
+                    starship_tmp="$(mktemp -d)"
                     curl -fsSL "https://github.com/starship/starship/releases/latest/download/starship-${starship_arch}-unknown-linux-musl.tar.gz" \
                         | tar xz -C "$starship_tmp" \
                         && sudo cp "$starship_tmp/starship" /usr/local/bin/starship \
@@ -641,7 +661,7 @@ deploy_ghostty_config() {
             ;;
     esac
 
-    mkdir -p "$ghostty_config_dir"
+    run_cmd mkdir -p "$ghostty_config_dir"
     if [[ -f "$ghostty_config_dir/config" ]] || [[ -f "$ghostty_config_dir/config.ghostty" ]]; then
         local existing
         existing="$(ls "$ghostty_config_dir"/config* 2>/dev/null | head -1)"
@@ -664,7 +684,7 @@ deploy_ghostty_config() {
 deploy_ghostty_config
 
 # --- Starship config ---
-mkdir -p "$HOME/.config"
+run_cmd mkdir -p "$HOME/.config"
 if [[ -f "$HOME/.config/starship.toml" ]]; then
     run_cmd cp "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak.$(date +%s)"
     warn "Backed up existing starship.toml"
@@ -676,7 +696,7 @@ success "Starship config deployed"
 if [[ "$SHELL_CHOICE" == "fish" ]]; then
     # Fish config
     FISH_CONFIG_DIR="$HOME/.config/fish"
-    mkdir -p "$FISH_CONFIG_DIR"
+    run_cmd mkdir -p "$FISH_CONFIG_DIR"
 
     if [[ -f "$FISH_CONFIG_DIR/config.fish" ]]; then
         run_cmd cp "$FISH_CONFIG_DIR/config.fish" "$FISH_CONFIG_DIR/config.fish.bak.$(date +%s)"
@@ -690,15 +710,17 @@ if [[ "$SHELL_CHOICE" == "fish" ]]; then
         # For Linux: use modified config without Homebrew paths
         run_cmd cp "$CONFIGS_DIR/config.fish" "$FISH_CONFIG_DIR/config.fish"
         # Patch: replace Homebrew paths with Linux equivalents
-        sed -i 's|/opt/homebrew/bin/starship|starship|g' "$FISH_CONFIG_DIR/config.fish"
-        sed -i 's|fish_add_path /opt/homebrew/bin|# PATH: system paths are used on Linux|g' "$FISH_CONFIG_DIR/config.fish"
+        run_cmd sed -i 's|/opt/homebrew/bin/starship|starship|g' "$FISH_CONFIG_DIR/config.fish"
+        run_cmd sed -i 's|fish_add_path /opt/homebrew/bin|# PATH: system paths are used on Linux|g' "$FISH_CONFIG_DIR/config.fish"
         # Fix pnpm path for Linux
-        sed -i 's|\$HOME/Library/pnpm|\$HOME/.local/share/pnpm|g' "$FISH_CONFIG_DIR/config.fish"
+        run_cmd sed -i 's|\$HOME/Library/pnpm|\$HOME/.local/share/pnpm|g' "$FISH_CONFIG_DIR/config.fish"
     fi
     success "Fish config deployed"
 
     # Fish abbreviations (written to config.fish for Fish 3.x & 4.x compat)
-    if ! grep -qF 'abbr -a ls' "$FISH_CONFIG_DIR/config.fish" 2>/dev/null; then
+    if $DRY_RUN; then
+        echo -e "${YELLOW}[DRY-RUN]${NC} append Fish abbreviations to $FISH_CONFIG_DIR/config.fish"
+    elif ! grep -qF 'abbr -a ls' "$FISH_CONFIG_DIR/config.fish" 2>/dev/null; then
         info "Adding Fish abbreviations to config.fish..."
         cat >> "$FISH_CONFIG_DIR/config.fish" << 'ABBREOF'
 
@@ -719,7 +741,9 @@ ABBREOF
     fi
 
     # Zoxide + fzf init for fish
-    if ! grep -qF "zoxide" "$FISH_CONFIG_DIR/config.fish" 2>/dev/null; then
+    if $DRY_RUN; then
+        echo -e "${YELLOW}[DRY-RUN]${NC} append zoxide + fzf init to $FISH_CONFIG_DIR/config.fish"
+    elif ! grep -qF "zoxide" "$FISH_CONFIG_DIR/config.fish" 2>/dev/null; then
         info "Adding zoxide + fzf init to fish config..."
         cat >> "$FISH_CONFIG_DIR/config.fish" << 'FISHEOF'
 
@@ -742,7 +766,9 @@ FISHEOF
 
     # Add ~/.local/bin to fish PATH on Linux
     if [[ "$OS" == "debian" || "$OS" == "wsl" ]]; then
-        if ! grep -qF '.local/bin' "$FISH_CONFIG_DIR/config.fish" 2>/dev/null; then
+        if $DRY_RUN; then
+            echo -e "${YELLOW}[DRY-RUN]${NC} append fish_add_path ~/.local/bin to config.fish"
+        elif ! grep -qF '.local/bin' "$FISH_CONFIG_DIR/config.fish" 2>/dev/null; then
             echo '' >> "$FISH_CONFIG_DIR/config.fish"
             echo '# Local bin (Linux)' >> "$FISH_CONFIG_DIR/config.fish"
             echo 'fish_add_path $HOME/.local/bin' >> "$FISH_CONFIG_DIR/config.fish"
@@ -762,15 +788,15 @@ else
         run_cmd cp "$CONFIGS_DIR/.zshrc" "$HOME/.zshrc"
 
         # Patch Homebrew paths → Linux paths
-        sed -i 's|export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:\$PATH"|# PATH — system paths on Linux\nexport PATH="$HOME/.local/bin:$PATH"|' "$HOME/.zshrc"
+        run_cmd sed -i 's|export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:\$PATH"|# PATH — system paths on Linux\nexport PATH="$HOME/.local/bin:$PATH"|' "$HOME/.zshrc"
 
         # Patch zsh plugin source paths
-        sed -i 's|/opt/homebrew/share/zsh-syntax-highlighting/|/usr/share/zsh-syntax-highlighting/|g' "$HOME/.zshrc"
-        sed -i 's|/opt/homebrew/share/zsh-autosuggestions/|/usr/share/zsh-autosuggestions/|g' "$HOME/.zshrc"
-        sed -i 's|/opt/homebrew/share/zsh-completions|/usr/share/zsh-completions|g' "$HOME/.zshrc"
+        run_cmd sed -i 's|/opt/homebrew/share/zsh-syntax-highlighting/|/usr/share/zsh-syntax-highlighting/|g' "$HOME/.zshrc"
+        run_cmd sed -i 's|/opt/homebrew/share/zsh-autosuggestions/|/usr/share/zsh-autosuggestions/|g' "$HOME/.zshrc"
+        run_cmd sed -i 's|/opt/homebrew/share/zsh-completions|/usr/share/zsh-completions|g' "$HOME/.zshrc"
 
         # Patch pnpm path for Linux
-        sed -i 's|\$HOME/Library/pnpm|\$HOME/.local/share/pnpm|g' "$HOME/.zshrc"
+        run_cmd sed -i 's|\$HOME/Library/pnpm|\$HOME/.local/share/pnpm|g' "$HOME/.zshrc"
     fi
     success "Zsh config deployed"
 fi
