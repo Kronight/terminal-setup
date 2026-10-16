@@ -134,7 +134,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Kronight/terminal-setup/main
 | `ls` | `eza --icons --group-directories-first` |
 | `ll` | `eza -la --icons --group-directories-first` |
 | `lt` | `eza --tree --icons --level=2` |
-| `cat` | `bat` |
+| `cat` | `batcat` |
 | `find` | `fd` |
 | `grep` | `rg` |
 

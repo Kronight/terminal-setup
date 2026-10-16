@@ -100,11 +100,9 @@ function set-ssh-key() {
 alias ls='eza --icons --group-directories-first'
 alias ll='eza -la --icons --group-directories-first'
 alias lt='eza --tree --icons --level=2'
-alias cat='bat'
+alias cat='batcat'
 alias find='fd'
 alias grep='rg'
-alias top='btop'
-alias lg='lazygit'
 
 # ─── pnpm ────────────────────────────────────────────────────────────
 export PNPM_HOME="$HOME/Library/pnpm"
