@@ -137,7 +137,7 @@ CONFIGS_DIR="$SCRIPT_DIR/configs"
 if [[ ! -d "$CONFIGS_DIR" ]]; then
     info "Config files not found locally, cloning repo..."
     TMPDIR_CLONE="$(mktemp -d)"
-    git clone --depth 1 https://github.com/lewislulu/terminal-setup.git "$TMPDIR_CLONE/terminal-setup"
+    git clone --depth 1 https://github.com/Kronight/terminal-setup.git "$TMPDIR_CLONE/terminal-setup"
     SCRIPT_DIR="$TMPDIR_CLONE/terminal-setup"
     CONFIGS_DIR="$SCRIPT_DIR/configs"
 fi

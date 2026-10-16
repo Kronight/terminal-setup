@@ -34,14 +34,14 @@ One-script terminal environment setup for **macOS**, **Debian/Ubuntu**, and **Wi
 ### macOS
 
 ```bash
-git clone https://github.com/lewislulu/terminal-setup.git
+git clone https://github.com/Kronight/terminal-setup.git
 cd terminal-setup && ./setup.sh
 ```
 
 ### Debian / Ubuntu
 
 ```bash
-git clone https://github.com/lewislulu/terminal-setup.git
+git clone https://github.com/Kronight/terminal-setup.git
 cd terminal-setup && ./setup.sh
 ```
 
@@ -55,7 +55,7 @@ wsl --install
 
 Then inside WSL:
 ```bash
-git clone https://github.com/lewislulu/terminal-setup.git
+git clone https://github.com/Kronight/terminal-setup.git
 cd terminal-setup && ./setup.sh
 ```
 
@@ -70,7 +70,7 @@ cd terminal-setup && ./setup.sh
 One-liner (auto-clones):
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/main/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Kronight/terminal-setup/main/setup.sh)
 ```
 
 ## Choose Your Shell

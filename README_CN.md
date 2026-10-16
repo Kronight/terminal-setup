@@ -34,14 +34,14 @@
 ### macOS
 
 ```bash
-git clone https://github.com/lewislulu/terminal-setup.git
+git clone https://github.com/Kronight/terminal-setup.git
 cd terminal-setup && ./setup.sh
 ```
 
 ### Debian / Ubuntu
 
 ```bash
-git clone https://github.com/lewislulu/terminal-setup.git
+git clone https://github.com/Kronight/terminal-setup.git
 cd terminal-setup && ./setup.sh
 ```
 
@@ -55,7 +55,7 @@ wsl --install
 
 然后在 WSL 中：
 ```bash
-git clone https://github.com/lewislulu/terminal-setup.git
+git clone https://github.com/Kronight/terminal-setup.git
 cd terminal-setup && ./setup.sh
 ```
 
@@ -70,7 +70,7 @@ cd terminal-setup && ./setup.sh
 一行命令（自动 clone）：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/main/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Kronight/terminal-setup/main/setup.sh)
 ```
 
 ## 选择你的 Shell
