@@ -80,7 +80,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **POSIX 兼容** | ❌ 自有语法 | ✅ 兼容 |
 | **自动补全建议** | ✅ 内置 | ✅ 通过插件 |
 | **语法高亮** | ✅ 内置 | ✅ 通过插件 |
-| **Node 管理** | fnm（共享） | fnm（共享） |
 | **配置文件** | `~/.config/fish/config.fish` | `~/.zshrc` |
 | **适合** | 开箱即用，省心 | 写脚本，POSIX 兼容 |
 
@@ -97,14 +96,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **[fd](https://github.com/sharkdp/fd)** | 更快更直观的 `find` |
 | **[ripgrep](https://github.com/BurntSushi/ripgrep)** | 比 `grep` 快几个数量级 |
 | **[fzf](https://github.com/junegunn/fzf)** | 模糊查找器（Ctrl+R / Ctrl+T / Alt+C） |
-| **[btop](https://github.com/aristocratos/btop)** | 漂亮的系统监控 |
 | **[zoxide](https://github.com/ajeetdsouza/zoxide)** | 智能 `cd`，学习你的习惯 |
-| **[jq](https://github.com/jqlang/jq)** | JSON 处理器 |
-| **[tldr](https://github.com/tldr-pages/tldr)** | 简化版 man 手册，附带示例 |
 | **[delta](https://github.com/dandavison/delta)** | 带语法高亮的 git diff |
-| **[lazygit](https://github.com/jesseduffield/lazygit)** | Git 终端 UI |
-| **[fnm](https://github.com/Schniz/fnm)** | 快速 Node 版本管理器（Rust 编写） |
-| **[Zellij](https://zellij.dev)** | 现代终端复用器（可选） |
 
 ## 脚本做了什么
 
@@ -114,9 +107,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 4. 安装你选择的 **Shell** + 插件
 5. 安装所有 **CLI 工具**（macOS 用 Homebrew，Linux 用 apt + GitHub releases）
 6. 安装 **Starship** 提示符 + Catppuccin Mocha 配置
-7. 安装 **fnm** + **Node.js** LTS（可选）
-8. 安装 **Zellij** 终端复用器（可选）
-9. 部署所有配置文件（已有配置会加时间戳备份）
+7. 部署所有配置文件（已有配置会加时间戳备份）
 
 ## 平台说明
 
@@ -125,7 +116,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 - Ghostty 作为原生 macOS 应用安装
 
 ### Debian / Ubuntu
-- CLI 工具优先用 apt 安装，apt 没有的从 GitHub releases 下载（delta、lazygit、eza）
+- CLI 工具优先用 apt 安装，apt 没有的从 GitHub releases 下载（delta、eza）
 - `bat` 在 Debian 上叫 `batcat`，`fd` 叫 `fdfind` — 脚本会自动创建软链接
 - 字体安装到 `~/.local/share/fonts/`
 - Ghostty 不在 apt 里 — 可通过 [snap、源码编译](https://ghostty.org/docs/install) 安装，或用其他终端
@@ -147,8 +138,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | `cat` | `bat` |
 | `find` | `fd` |
 | `grep` | `rg` |
-| `top` | `btop` |
-| `lg` | `lazygit` |
 
 ## fzf 快捷键
 
@@ -157,16 +146,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | `Ctrl+R` | 模糊搜索命令历史 |
 | `Ctrl+T` | 模糊查找文件（用 `fd` 作为后端） |
 | `Alt+C` | 模糊进入目录 |
-
-## fnm — Node 版本管理
-
-```bash
-fnm install 22            # 安装 Node 22
-fnm install --lts         # 安装最新 LTS
-fnm default 22            # 设置默认版本
-fnm use 22                # 当前 shell 切换
-echo "22" > .node-version # 进入目录自动切换
-```
 
 ## SSH Key 切换
 
@@ -218,18 +197,6 @@ GPU 加速、原生 macOS 应用、启动快、配置格式干净。iTerm2 做�
 - **Homebrew：** 本来就装了，`brew install` + `.zshrc` 里一行 `source`。零额外依赖。
 
 > **Linux 上：** Zsh 插件通过 apt（`zsh-autosuggestions`、`zsh-syntax-highlighting`）或 git clone 安装。
-
-### 为什么选 fnm 而不是 nvm？
-
-| | fnm | nvm |
-|---|-----|-----|
-| **语言** | Rust | Bash |
-| **Shell 启动耗时** | ~1ms | ~200-400ms |
-| **Fish 支持** | ✅ 原生 | ❌ 需要 nvm.fish |
-| **Zsh 支持** | ✅ 原生 | ✅ 原生 |
-| **自动切换** | ✅ `--use-on-cd` | ⚠️ 需要额外 hook |
-| **安装方式** | `brew install fnm` / `curl` | curl 脚本 |
-| **跨 Shell 共享** | ✅ 共用同一份 Node | ❌ 存储路径不同 |
 
 ### 为什么选 Maple Mono NF CN？
 

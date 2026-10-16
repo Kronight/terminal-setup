@@ -80,7 +80,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **POSIX** | ❌ Own syntax | ✅ Compatible |
 | **Autosuggestions** | ✅ Built-in | ✅ via plugin |
 | **Syntax Highlighting** | ✅ Built-in | ✅ via plugin |
-| **Node Manager** | fnm (shared) | fnm (shared) |
 | **Config** | `~/.config/fish/config.fish` | `~/.zshrc` |
 | **Best for** | Clean defaults, no fuss | Scripting, POSIX compat |
 
@@ -97,14 +96,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **[fd](https://github.com/sharkdp/fd)** | `find` but fast & intuitive |
 | **[ripgrep](https://github.com/BurntSushi/ripgrep)** | `grep` but orders of magnitude faster |
 | **[fzf](https://github.com/junegunn/fzf)** | Fuzzy finder (Ctrl+R / Ctrl+T / Alt+C) |
-| **[btop](https://github.com/aristocratos/btop)** | Beautiful system monitor |
 | **[zoxide](https://github.com/ajeetdsouza/zoxide)** | Smart `cd` that learns your habits |
-| **[jq](https://github.com/jqlang/jq)** | JSON processor |
-| **[tldr](https://github.com/tldr-pages/tldr)** | Simplified man pages with examples |
 | **[delta](https://github.com/dandavison/delta)** | Beautiful git diffs with syntax highlighting |
-| **[lazygit](https://github.com/jesseduffield/lazygit)** | Git TUI |
-| **[fnm](https://github.com/Schniz/fnm)** | Fast Node Manager (Rust) |
-| **[Zellij](https://zellij.dev)** | Modern terminal multiplexer (optional) |
 
 ## What It Does
 
@@ -114,9 +107,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 4. Installs your **shell** of choice + plugins
 5. Installs all **CLI tools** (Homebrew on macOS, apt + GitHub releases on Linux)
 6. Installs **Starship** prompt with Catppuccin Mocha config
-7. Installs **fnm** + **Node.js** LTS (optional)
-8. Installs **Zellij** terminal multiplexer (optional)
-9. Deploys all config files (existing configs are backed up with timestamps)
+7. Deploys all config files (existing configs are backed up with timestamps)
 
 ## Platform Notes
 
@@ -125,7 +116,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 - Ghostty installs as a native macOS app
 
 ### Debian / Ubuntu
-- CLI tools install via apt where available, GitHub releases for others (delta, lazygit, eza)
+- CLI tools install via apt where available, GitHub releases for others (delta, eza)
 - `bat` → `batcat`, `fd` → `fdfind` — symlinks are created automatically
 - Fonts install to `~/.local/share/fonts/`
 - Ghostty is not in apt — install manually via [snap, build from source](https://ghostty.org/docs/install), or use another terminal
@@ -147,8 +138,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | `cat` | `bat` |
 | `find` | `fd` |
 | `grep` | `rg` |
-| `top` | `btop` |
-| `lg` | `lazygit` |
 
 ## fzf Keybindings
 
@@ -157,16 +146,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | `Ctrl+R` | Fuzzy search command history |
 | `Ctrl+T` | Fuzzy find files (uses `fd` as backend) |
 | `Alt+C` | Fuzzy cd into directory |
-
-## fnm — Node Version Manager
-
-```bash
-fnm install 22            # Install Node 22
-fnm install --lts         # Install latest LTS
-fnm default 22            # Set default version
-fnm use 22                # Switch in current shell
-echo "22" > .node-version # Auto-switch when entering this directory
-```
 
 ## SSH Key Switcher
 
@@ -220,26 +199,6 @@ For 3 plugins, a plugin manager is overkill:
 **Rule of thumb:** If you have <5 plugins, Homebrew direct install. If you have 10+, consider antidote or sheldon.
 
 > **On Linux:** Zsh plugins install via apt (`zsh-autosuggestions`, `zsh-syntax-highlighting` packages) or git clone as fallback.
-
-### Why fnm over nvm?
-
-| | fnm | nvm |
-|---|-----|-----|
-| **Language** | Rust | Bash |
-| **Shell startup** | ~1ms | ~200-400ms (or lazy-load hack) |
-| **Fish support** | ✅ Native | ❌ Needs nvm.fish (separate project) |
-| **Zsh support** | ✅ Native | ✅ Native |
-| **Auto-switch** | ✅ `--use-on-cd` (reads `.node-version`, `.nvmrc`) | ⚠️ Needs hook script |
-| **Install** | `brew install fnm` / `curl` | curl script, modifies shell rc |
-| **Shared across shells** | ✅ Same Node installs for Fish & Zsh | ❌ nvm.fish and nvm-sh use different paths |
-
-The killer reasons:
-1. **Speed:** nvm adds 200-400ms to shell startup. fnm adds ~1ms. This matters when you open terminals frequently.
-2. **Unified:** One tool, one Node install location (`~/.local/share/fnm/`), works identically in Fish and Zsh. With nvm, you'd need nvm-sh for Zsh and nvm.fish for Fish — two different tools with incompatible storage paths.
-3. **Auto-switch:** `fnm env --use-on-cd` reads `.node-version` or `.nvmrc` files and switches automatically when you `cd` into a project. No extra hooks needed.
-4. **nvm.fish is a community project**, not official nvm. It works well but it's another dependency with its own quirks (custom `nvm_data` path, `set --universal nvm_default_version`).
-
-If you have existing `.nvmrc` files in your projects, fnm reads them — fully compatible.
 
 ### Why Maple Mono NF CN specifically?
 
