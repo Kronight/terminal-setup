@@ -91,7 +91,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **[Ghostty](https://ghostty.org)** | GPU 加速终端模拟器 |
 | **Fish** 或 **Zsh** | Shell（你选） |
 | **[Starship](https://starship.rs)** | 跨 Shell 提示符（Catppuccin Mocha 主题） |
-| **MesloLGS NF** | Nerd Font，提供图标和 Powerline 字形 |
+| **Maple Mono NF CN** | Nerd Font，完整中文（CJK）支持 |
 | **[bat](https://github.com/sharkdp/bat)** | 带语法高亮和行号的 `cat` |
 | **[eza](https://github.com/eza-community/eza)** | 带图标、git 状态、树形视图的 `ls` |
 | **[fd](https://github.com/sharkdp/fd)** | 更快更直观的 `find` |
@@ -110,7 +110,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 
 1. 安装**包管理器**（macOS 用 Homebrew，Linux 用 apt）
 2. 安装 **Ghostty** 终端（macOS；Linux 需手动安装）
-3. 下载 **MesloLGS NF** Nerd 字体
+3. 安装 **Maple Mono NF CN** Nerd 字体（仓库内置）
 4. 安装你选择的 **Shell** + 插件
 5. 安装所有 **CLI 工具**（macOS 用 Homebrew，Linux 用 apt + GitHub releases）
 6. 安装 **Starship** 提示符 + Catppuccin Mocha 配置
@@ -231,12 +231,14 @@ GPU 加速、原生 macOS 应用、启动快、配置格式干净。iTerm2 做�
 | **安装方式** | `brew install fnm` / `curl` | curl 脚本 |
 | **跨 Shell 共享** | ✅ 共用同一份 Node | ❌ 存储路径不同 |
 
-### 为什么选 MesloLGS NF？
+### 为什么选 Maple Mono NF CN？
 
-- 专为终端设计（等宽、小字号清晰）
-- 包含所有 Nerd Font 字形
-- Powerlevel10k 同款字体——终端实战测试
-- 有 Regular/Bold/Italic/Bold Italic 四种字重
+- 专为终端设计的等宽字体，包含完整 Nerd Font 字形
+- 完整 CJK 支持——中文按标准双宽渲染，中英混排对齐完美
+- 现代圆润风格，可选编程连字
+- 仓库内置 Regular/Bold/Italic/BoldItalic 四种字重
+
+来源：[subframe7536/maple-font](https://github.com/subframe7536/maple-font)。
 
 ### 为什么用 git-delta？
 

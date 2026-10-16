@@ -91,7 +91,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 | **[Ghostty](https://ghostty.org)** | GPU-accelerated terminal emulator |
 | **Fish** or **Zsh** | Shell (your choice) |
 | **[Starship](https://starship.rs)** | Cross-shell prompt (Catppuccin Mocha theme) |
-| **MesloLGS NF** | Nerd Font for icons & powerline glyphs |
+| **Maple Mono NF CN** | Nerd Font with full CJK (Chinese) support |
 | **[bat](https://github.com/sharkdp/bat)** | `cat` with syntax highlighting & line numbers |
 | **[eza](https://github.com/eza-community/eza)** | `ls` with icons, git status, tree view |
 | **[fd](https://github.com/sharkdp/fd)** | `find` but fast & intuitive |
@@ -110,7 +110,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 
 1. Installs **package manager** (Homebrew on macOS, apt on Linux)
 2. Installs **Ghostty** terminal (macOS; Linux users install separately)
-3. Downloads **MesloLGS NF** nerd fonts
+3. Installs **Maple Mono NF CN** nerd fonts (bundled in repo)
 4. Installs your **shell** of choice + plugins
 5. Installs all **CLI tools** (Homebrew on macOS, apt + GitHub releases on Linux)
 6. Installs **Starship** prompt with Catppuccin Mocha config
@@ -241,14 +241,14 @@ The killer reasons:
 
 If you have existing `.nvmrc` files in your projects, fnm reads them — fully compatible.
 
-### Why MesloLGS NF specifically?
+### Why Maple Mono NF CN specifically?
 
-- Designed for terminal use (monospace, clear at small sizes)
-- Includes all Nerd Font glyphs (icons, powerline, devicons)
-- Same font used by Powerlevel10k — battle-tested in terminals
-- Available in Regular/Bold/Italic/Bold Italic
+- Monospace font designed for terminals, with all Nerd Font glyphs (icons, powerline, devicons)
+- Full CJK support — Chinese renders at correct double width, so mixed Chinese/English text stays aligned
+- Modern rounded design with optional cursive programming ligatures
+- Bundled in `fonts/` in Regular/Bold/Italic/BoldItalic weights
 
-Alternatives: JetBrains Mono Nerd Font, Fira Code Nerd Font. All good choices. MesloLGS just has the widest compatibility.
+Source: [subframe7536/maple-font](https://github.com/subframe7536/maple-font). Alternatives: Sarasa Mono SC, JetBrains Mono Nerd Font.
 
 ### Why git-delta for diffs?
 

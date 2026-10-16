@@ -4,9 +4,8 @@
 #
 # Platforms: macOS, Debian/Ubuntu, Windows (via WSL)
 #
-# Stack: Ghostty + (Fish or Zsh) + Starship + Nerd Font (MesloLGS)
-# Tools: bat, eza, fd, ripgrep, btop, zoxide, jq, tldr, delta, lazygit, fzf
-# Node:  fnm (Fast Node Manager) — works with both Fish and Zsh
+# Stack: Ghostty + (Fish or Zsh) + Starship + Nerd Font (Maple Mono NF CN)
+# Tools: bat, eza, fd, ripgrep, zoxide, delta, fzf
 # Theme: Catppuccin Mocha (Starship)
 #
 # Usage:
@@ -194,7 +193,7 @@ has_cmd() {
 # ─── Step 1: Package Manager ────────────────────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  📦 Step 1/9: Package Manager${NC}"
+echo -e "${BOLD}  📦 Step 1/7: Package Manager${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 case "$OS" in
@@ -229,7 +228,7 @@ esac
 # ─── Step 2: Terminal Emulator ───────────────────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  👻 Step 2/9: Terminal Emulator${NC}"
+echo -e "${BOLD}  👻 Step 2/7: Terminal Emulator${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 case "$OS" in
@@ -264,10 +263,10 @@ case "$OS" in
         ;;
 esac
 
-# ─── Step 3: Nerd Font (MesloLGS NF) ────────────────────────────────
+# ─── Step 3: Nerd Font (Maple Mono NF CN) ───────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  🔤 Step 3/9: Nerd Font (MesloLGS NF)${NC}"
+echo -e "${BOLD}  🔤 Step 3/7: Nerd Font (Maple Mono NF CN)${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 # Determine font directory based on OS
@@ -280,11 +279,11 @@ case "$OS" in
         ;;
 esac
 
-MESLO_FONTS=(
-    "MesloLGS NF Regular.ttf"
-    "MesloLGS NF Bold.ttf"
-    "MesloLGS NF Italic.ttf"
-    "MesloLGS NF Bold Italic.ttf"
+MAPLE_FONTS=(
+    "MapleMono-NF-CN-Regular.ttf"
+    "MapleMono-NF-CN-Bold.ttf"
+    "MapleMono-NF-CN-Italic.ttf"
+    "MapleMono-NF-CN-BoldItalic.ttf"
 )
 
 # Font source: bundled in repo (fonts/) — no download needed
@@ -292,16 +291,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FONT_SRC_DIR="$SCRIPT_DIR/fonts"
 
 FONT_INSTALLED=true
-for font in "${MESLO_FONTS[@]}"; do
+for font in "${MAPLE_FONTS[@]}"; do
     [[ ! -f "$FONT_DIR/$font" ]] && FONT_INSTALLED=false && break
 done
 
 if $FONT_INSTALLED; then
-    success "MesloLGS NF fonts already installed"
+    success "Maple Mono NF CN fonts already installed"
 else
-    info "Installing MesloLGS NF fonts from repo..."
+    info "Installing Maple Mono NF CN fonts from repo..."
     mkdir -p "$FONT_DIR"
-    for font in "${MESLO_FONTS[@]}"; do
+    for font in "${MAPLE_FONTS[@]}"; do
         if [[ -f "$FONT_SRC_DIR/$font" ]]; then
             run_cmd cp "$FONT_SRC_DIR/$font" "$FONT_DIR/$font"
         else
@@ -314,16 +313,16 @@ else
             run_cmd fc-cache -fv "$FONT_DIR"
         fi
     fi
-    success "MesloLGS NF fonts installed"
+    success "Maple Mono NF CN fonts installed"
 fi
 
 # ─── Step 4: Shell ──────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 if [[ "$SHELL_CHOICE" == "fish" ]]; then
-    echo -e "${BOLD}  🐟 Step 4/9: Fish Shell${NC}"
+    echo -e "${BOLD}  🐟 Step 4/7: Fish Shell${NC}"
 else
-    echo -e "${BOLD}  🐚 Step 4/9: Zsh + Fish-like Plugins${NC}"
+    echo -e "${BOLD}  🐚 Step 4/7: Zsh + Fish-like Plugins${NC}"
 fi
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
@@ -464,11 +463,11 @@ esac
 # ─── Step 5: CLI Tools ──────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  🛠  Step 5/9: CLI Tools${NC}"
+echo -e "${BOLD}  🛠  Step 5/7: CLI Tools${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 install_cli_tools_macos() {
-    local TOOLS=(bat eza fd ripgrep btop zoxide jq tldr git-delta lazygit fzf)
+    local TOOLS=(bat eza fd ripgrep zoxide git-delta fzf)
     for tool in "${TOOLS[@]}"; do
         if brew list "$tool" &>/dev/null; then
             success "$tool already installed"
@@ -482,7 +481,7 @@ install_cli_tools_macos() {
 
 install_cli_tools_linux() {
     # Tools available directly from apt (on modern Debian/Ubuntu)
-    local APT_TOOLS=(bat fd-find ripgrep jq fzf)
+    local APT_TOOLS=(bat fd-find ripgrep fzf)
 
     for tool in "${APT_TOOLS[@]}"; do
         if dpkg -s "$tool" &>/dev/null 2>&1; then
@@ -493,22 +492,6 @@ install_cli_tools_linux() {
             success "$tool installed"
         fi
     done
-
-    # btop — not in apt on older Debian/Ubuntu, use snap as fallback
-    if has_cmd btop; then
-        success "btop already installed"
-    else
-        info "Installing btop..."
-        if run_cmd sudo apt-get install -y btop 2>/dev/null; then
-            success "btop installed via apt"
-        elif has_cmd snap; then
-            info "btop not in apt, trying snap..."
-            run_cmd sudo snap install btop
-            success "btop installed via snap"
-        else
-            warn "btop not available via apt or snap — skipping (install manually: https://github.com/aristocratos/btop)"
-        fi
-    fi
 
     # zoxide — not in apt on older Debian/Ubuntu, use bundled installer as fallback
     if has_cmd zoxide; then
@@ -566,18 +549,6 @@ install_cli_tools_linux() {
         fi
     fi
 
-    # tldr (tealdeer) — try apt first, then bundled binary
-    if has_cmd tldr; then
-        success "tldr already installed"
-    else
-        info "Installing tldr..."
-        if run_cmd sudo apt-get install -y tealdeer 2>/dev/null; then
-            success "tldr installed via apt"
-        else
-            install_bundled_bin tldr || warn "Could not install tldr — skipping"
-        fi
-    fi
-
     # git-delta — try apt first, then bundled binary
     if has_cmd delta; then
         success "git-delta already installed"
@@ -587,18 +558,6 @@ install_cli_tools_linux() {
             success "git-delta installed via apt"
         else
             install_bundled_bin delta || warn "Could not install git-delta — skipping"
-        fi
-    fi
-
-    # lazygit — try apt first, then bundled binary
-    if has_cmd lazygit; then
-        success "lazygit already installed"
-    else
-        info "Installing lazygit..."
-        if run_cmd sudo apt-get install -y lazygit 2>/dev/null; then
-            success "lazygit installed via apt"
-        else
-            install_bundled_bin lazygit || warn "Could not install lazygit — skipping"
         fi
     fi
 
@@ -616,7 +575,7 @@ esac
 # ─── Step 6: Starship Prompt ────────────────────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  🚀 Step 6/9: Starship Prompt${NC}"
+echo -e "${BOLD}  🚀 Step 6/7: Starship Prompt${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 if has_cmd starship; then
@@ -659,120 +618,10 @@ else
     success "Starship installed"
 fi
 
-# ─── Step 7: fnm + Node.js (optional) ───────────────────────────────
+# ─── Step 7: Config Files ───────────────────────────────────────────
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  🟢 Step 7/9: fnm + Node.js (optional)${NC}"
-echo -e "${BOLD}══════════════════════════════════════════${NC}"
-
-if has_cmd fnm; then
-    success "fnm already installed"
-    # Load fnm in current shell so we can install Node
-    eval "$(fnm env --use-on-cd --shell bash)"
-    if ! fnm list 2>/dev/null | grep -q lts; then
-        info "Installing Node LTS..."
-        run_cmd fnm install --lts
-        run_cmd fnm default lts-latest
-        run_cmd fnm use lts-latest
-        success "Node LTS installed and set as default"
-    else
-        success "Node LTS already installed"
-    fi
-else
-    echo ""
-    echo -e "  ${YELLOW}⚠ WARNING: fnm manages its own Node.js versions.${NC}"
-    echo -e "  ${YELLOW}  If you already have Node.js installed (e.g. via nvm, Homebrew, or system),${NC}"
-    echo -e "  ${YELLOW}  fnm may shadow your existing Node/npm and tools installed globally${NC}"
-    echo -e "  ${YELLOW}  (e.g. Claude Code, Codex CLI, pnpm global packages).${NC}"
-    echo -e "  ${YELLOW}  Only install fnm if you need to manage multiple Node versions.${NC}"
-    echo ""
-    printf "  Install fnm + Node.js? (y/N, default: N): "
-    read -r INSTALL_FNM
-    if [[ "$INSTALL_FNM" =~ ^[Yy]$ ]]; then
-        case "$OS" in
-            macos)
-                info "Installing fnm (Fast Node Manager)..."
-                run_cmd brew install fnm
-                ;;
-            debian|wsl)
-                info "Installing fnm via official installer..."
-                run_cmd bash -c "$(curl -fsSL https://fnm.vercel.app/install)" -- --skip-shell
-                export PATH="$HOME/.local/share/fnm:$PATH"
-                ;;
-        esac
-        success "fnm installed"
-
-        # Load fnm in current shell so we can install Node
-        if has_cmd fnm; then
-            eval "$(fnm env --use-on-cd --shell bash)"
-            info "Installing Node LTS..."
-            run_cmd fnm install --lts
-            run_cmd fnm default lts-latest
-            run_cmd fnm use lts-latest
-            success "Node LTS installed and set as default"
-        fi
-    else
-        info "Skipping fnm + Node.js"
-    fi
-fi
-
-# ─── Step 8: Zellij (optional) ──────────────────────────────────────
-echo ""
-echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  🪟 Step 8/9: Zellij (optional)${NC}"
-echo -e "${BOLD}══════════════════════════════════════════${NC}"
-
-if has_cmd zellij; then
-    success "Zellij already installed"
-else
-    echo ""
-    echo -e "  Zellij is a modern terminal multiplexer (like tmux, but better UX)."
-    printf "  Install Zellij? (y/N): "
-    read -r INSTALL_ZELLIJ
-    if [[ "$INSTALL_ZELLIJ" =~ ^[Yy]$ ]]; then
-        case "$OS" in
-            macos)
-                info "Installing Zellij..."
-                run_cmd brew install zellij
-                ;;
-            debian|wsl)
-                info "Installing Zellij..."
-                if [[ -f "$SCRIPT_DIR/bin/linux-x86_64/zellij" ]]; then
-                    run_cmd sudo cp "$SCRIPT_DIR/bin/linux-x86_64/zellij" /usr/local/bin/zellij
-                    run_cmd sudo chmod +x /usr/local/bin/zellij
-                else
-                    # Download binary from GitHub releases (zellij.dev/launch auto-starts zellij, which hangs the script)
-                    info "Downloading Zellij from GitHub releases..."
-                    local zellij_arch
-                    case "$(uname -m)" in
-                        x86_64)  zellij_arch="x86_64" ;;
-                        aarch64) zellij_arch="aarch64" ;;
-                        *) warn "Unsupported arch for Zellij: $(uname -m)"; return 0 ;;
-                    esac
-                    local zellij_url="https://github.com/zellij-org/zellij/releases/latest/download/zellij-${zellij_arch}-unknown-linux-musl.tar.gz"
-                    local zellij_tmp
-                    zellij_tmp="$(mktemp -d)"
-                    if $DRY_RUN; then
-                        echo -e "${YELLOW}[DRY-RUN]${NC} curl -fsSL $zellij_url | tar xz -C $zellij_tmp && sudo cp $zellij_tmp/zellij /usr/local/bin/"
-                    else
-                        curl -fsSL "$zellij_url" | tar xz -C "$zellij_tmp" \
-                            && sudo cp "$zellij_tmp/zellij" /usr/local/bin/zellij \
-                            && sudo chmod +x /usr/local/bin/zellij
-                        rm -rf "$zellij_tmp"
-                    fi
-                fi
-                ;;
-        esac
-        success "Zellij installed"
-    else
-        info "Skipping Zellij"
-    fi
-fi
-
-# ─── Step 9: Config Files ───────────────────────────────────────────
-echo ""
-echo -e "${BOLD}══════════════════════════════════════════${NC}"
-echo -e "${BOLD}  📦 Step 9/9: Deploying Configs${NC}"
+echo -e "${BOLD}  📦 Step 7/7: Deploying Configs${NC}"
 echo -e "${BOLD}══════════════════════════════════════════${NC}"
 
 # --- Ghostty config ---
@@ -861,8 +710,6 @@ if status is-interactive
     abbr -a cat "bat"
     abbr -a find "fd"
     abbr -a grep "rg"
-    abbr -a top "btop"
-    abbr -a lg "lazygit"
     abbr -a cd "z"
 end
 ABBREOF
@@ -924,11 +771,6 @@ else
 
         # Patch pnpm path for Linux
         sed -i 's|\$HOME/Library/pnpm|\$HOME/.local/share/pnpm|g' "$HOME/.zshrc"
-
-        # Add fnm path for Linux (installed to ~/.local/share/fnm)
-        if ! grep -qF '.local/share/fnm' "$HOME/.zshrc" 2>/dev/null; then
-            sed -i '/# ─── fnm/i # fnm binary path (Linux)\nexport PATH="$HOME/.local/share/fnm:$PATH"\n' "$HOME/.zshrc"
-        fi
     fi
     success "Zsh config deployed"
 fi
@@ -979,20 +821,13 @@ else
     echo -e "    🎨 zsh-syntax-highlight — fish-like highlighting"
 fi
 echo -e "    🚀 Starship             — prompt (Catppuccin Mocha)"
-echo -e "    🔤 MesloLGS NF          — nerd font"
-echo -e "    🟢 fnm                  — Node version manager (fast!)"
+echo -e "    🔤 Maple Mono NF CN     — nerd font"
 echo -e "    📦 bat eza fd rg        — modern coreutils"
-echo -e "    📊 btop                 — system monitor"
-echo -e "    🔀 lazygit + delta      — git tools"
+echo -e "    🔀 delta                — git diff pager"
 echo -e "    📁 zoxide               — smart cd"
 echo -e "    🔍 fzf                  — fuzzy finder"
-if has_cmd zellij; then
-    echo -e "    🪟 zellij               — terminal multiplexer"
-fi
 echo ""
 echo -e "  ${YELLOW}Next steps:${NC}"
 echo -e "    1. Restart your terminal (or open ${BOLD}Ghostty${NC})"
-echo -e "    2. Node is ready: ${BOLD}node --version${NC}"
-echo -e "    3. Pin a project: ${BOLD}echo 22 > .node-version${NC} (fnm auto-switches)"
-echo -e "    4. Try: ${BOLD}Ctrl+R${NC} (fzf history) / ${BOLD}Ctrl+T${NC} (fzf files)"
+echo -e "    2. Try: ${BOLD}Ctrl+R${NC} (fzf history) / ${BOLD}Ctrl+T${NC} (fzf files)"
 echo ""
