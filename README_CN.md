@@ -23,7 +23,7 @@
 | 平台 | 状态 | 包管理器 |
 |------|------|---------|
 | 🍎 **macOS** | ✅ 主力平台 — 长期使用验证 | Homebrew |
-| 🐧 **Debian / Ubuntu** | 🧪 实验性 — 可用但未经长期测试 | apt + 内置二进制 |
+| 🐧 **Debian / Ubuntu** | 🧪 实验性 — 可用但未经长期测试 | apt + GitHub releases |
 | 🪟 **Windows (WSL)** | 🧪 实验性 — 可用但未经长期测试 | apt（WSL 内部） |
 
 > **注意：** 本脚本主要在 macOS 上开发和测试。Linux（Debian/Ubuntu）和 WSL 支持已添加且可用，但尚未经过长期使用测试。欢迎提 Issue 和 PR！
@@ -116,7 +116,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 - Ghostty 作为原生 macOS 应用安装
 
 ### Debian / Ubuntu
-- CLI 工具优先用 apt 安装，apt 没有的从 GitHub releases 下载（delta、eza）
+- CLI 工具只通过 apt 安装，apt 里没有的工具会警告并跳过（Starship 不在 apt 源里，从官方 GitHub releases 下载）
 - `bat` 在 Debian 上叫 `batcat`，`fd` 叫 `fdfind` — 脚本会自动创建软链接
 - 字体安装到 `~/.local/share/fonts/`
 - Ghostty 不在 apt 里 — 可通过 [snap、源码编译](https://ghostty.org/docs/install) 安装，或用其他终端

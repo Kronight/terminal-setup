@@ -543,22 +543,7 @@ install_cli_tools_linux() {
         success "fd symlink created"
     fi
 
-    # Helper: install bundled binary from bin/linux-x86_64/ (x86_64 only)
-    install_bundled_bin() {
-        local name="$1"
-        if [[ "$(uname -m)" != "x86_64" ]]; then
-            return 1
-        fi
-        if [[ -f "$SCRIPT_DIR/bin/linux-x86_64/$name" ]]; then
-            run_cmd sudo cp "$SCRIPT_DIR/bin/linux-x86_64/$name" "/usr/local/bin/$name"
-            run_cmd sudo chmod +x "/usr/local/bin/$name"
-            success "$name installed from bundled binary"
-            return 0
-        fi
-        return 1
-    }
-
-    # eza — try apt first, then bundled binary
+    # eza — apt only (packaged on modern Debian/Ubuntu)
     if has_cmd eza; then
         success "eza already installed"
     else
@@ -566,11 +551,11 @@ install_cli_tools_linux() {
         if run_cmd sudo apt-get install -y eza 2>/dev/null; then
             success "eza installed via apt"
         else
-            install_bundled_bin eza || warn "Could not install eza — skipping"
+            warn "eza not available via apt — skipping (install manually: https://github.com/eza-community/eza)"
         fi
     fi
 
-    # git-delta — try apt first, then bundled binary
+    # git-delta — apt only (packaged as git-delta on modern Debian/Ubuntu)
     if has_cmd delta; then
         success "git-delta already installed"
     else
@@ -578,7 +563,7 @@ install_cli_tools_linux() {
         if run_cmd sudo apt-get install -y git-delta 2>/dev/null; then
             success "git-delta installed via apt"
         else
-            install_bundled_bin delta || warn "Could not install git-delta — skipping"
+            warn "git-delta not available via apt — skipping (install manually: https://github.com/dandavison/delta)"
         fi
     fi
 
@@ -609,29 +594,23 @@ else
             ;;
         debian|wsl)
             info "Installing Starship..."
-            if [[ "$(uname -m)" == "x86_64" && -f "$SCRIPT_DIR/bin/linux-x86_64/starship" ]]; then
-                # Use bundled binary (most reliable)
-                run_cmd sudo cp "$SCRIPT_DIR/bin/linux-x86_64/starship" /usr/local/bin/starship
-                run_cmd sudo chmod +x /usr/local/bin/starship
+            # starship is not in Debian/Ubuntu apt repos — use official GitHub release binary
+            # (the starship.rs installer script may fail on some WSL setups)
+            starship_arch=""
+            case "$(uname -m)" in
+                x86_64)  starship_arch="x86_64" ;;
+                aarch64) starship_arch="aarch64" ;;
+                *) error "Unsupported arch for Starship: $(uname -m)" ;;
+            esac
+            if $DRY_RUN; then
+                echo -e "${YELLOW}[DRY-RUN]${NC} Download starship from GitHub releases"
             else
-                # Download from GitHub releases (starship.rs installer may fail on some WSL setups)
-                info "Bundled binary not found, downloading from GitHub..."
-                starship_arch=""
-                case "$(uname -m)" in
-                    x86_64)  starship_arch="x86_64" ;;
-                    aarch64) starship_arch="aarch64" ;;
-                    *) error "Unsupported arch for Starship: $(uname -m)" ;;
-                esac
-                if $DRY_RUN; then
-                    echo -e "${YELLOW}[DRY-RUN]${NC} Download starship from GitHub releases"
-                else
-                    starship_tmp="$(mktemp -d)"
-                    curl -fsSL "https://github.com/starship/starship/releases/latest/download/starship-${starship_arch}-unknown-linux-musl.tar.gz" \
-                        | tar xz -C "$starship_tmp" \
-                        && sudo cp "$starship_tmp/starship" /usr/local/bin/starship \
-                        && sudo chmod +x /usr/local/bin/starship
-                    rm -rf "$starship_tmp"
-                fi
+                starship_tmp="$(mktemp -d)"
+                curl -fsSL "https://github.com/starship/starship/releases/latest/download/starship-${starship_arch}-unknown-linux-musl.tar.gz" \
+                    | tar xz -C "$starship_tmp" \
+                    && sudo cp "$starship_tmp/starship" /usr/local/bin/starship \
+                    && sudo chmod +x /usr/local/bin/starship
+                rm -rf "$starship_tmp"
             fi
             ;;
     esac

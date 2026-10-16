@@ -23,7 +23,7 @@ One-script terminal environment setup for **macOS**, **Debian/Ubuntu**, and **Wi
 | Platform | Status | Package Manager |
 |----------|--------|----------------|
 | 🍎 **macOS** | ✅ Primary — battle-tested | Homebrew |
-| 🐧 **Debian / Ubuntu** | 🧪 Experimental — works but not extensively tested | apt + bundled binaries |
+| 🐧 **Debian / Ubuntu** | 🧪 Experimental — works but not extensively tested | apt + GitHub releases |
 | 🪟 **Windows (WSL)** | 🧪 Experimental — works but not extensively tested | apt (inside WSL) |
 | 🪟 **Windows (native)** | ⛔ Not supported | Use WSL instead |
 
@@ -116,7 +116,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lewislulu/terminal-setup/mai
 - Ghostty installs as a native macOS app
 
 ### Debian / Ubuntu
-- CLI tools install via apt where available, GitHub releases for others (delta, eza)
+- CLI tools install via apt only; tools not packaged in apt are skipped with a warning (Starship downloads from its official GitHub release, since it has no apt package)
 - `bat` → `batcat`, `fd` → `fdfind` — symlinks are created automatically
 - Fonts install to `~/.local/share/fonts/`
 - Ghostty is not in apt — install manually via [snap, build from source](https://ghostty.org/docs/install), or use another terminal
